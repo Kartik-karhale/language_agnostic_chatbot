@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chatbot Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="sidebar">
+
+      <h2>🤖 Admin Panel</h2>
+      <!-- ✅ ADMIN PROFILE SECTION -->
+      <div class="admin-profile">
+        <img id="adminPhoto" src="https://via.placeholder.com/80" alt="Admin Photo">
+        <h3 id="adminName">Loading...</h3>
+        <p id="adminEmail"></p>
+      </div>
+
+      <nav>
+        <ul>
+          <li class="active" onclick="showSection('dashboard', event)">Dashboard</li>
+          <li onclick="showSection('chatlogs', event)">Chatlogs</li>
+          <li onclick="showSection('knowledge', event)">Knowledge Base</li>
+          <li onclick="showSection('settings', event)">Settings</li>
+        </ul>
+      </nav>
+
+      <!-- ✅ THEME TOGGLE -->
+      <div>
+        <div class="theme-toggle-box">
+          <label class="theme-switch">
+            <input type="checkbox" id="themeToggle">
+            <span class="slider"></span>
+          </label>
+          <p>Dark Mode</p>
+        </div>
+
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </aside>
+
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="main-content">
+
+      <!-- ✅✅ DASHBOARD SECTION WITH CARDS + CHARTS -->
+      <section id="dashboard" class="active-section">
+        <h1>Dashboard Overview</h1>
+
+        <div class="cards">
+          <div class="card">
+            Total Messages<br>
+            <span id="totalMessages">0</span>
+          </div>
+
+          <div class="card">
+            Total Users<br>
+            <span id="totalUsers">0</span>
+          </div>
+
+          <div class="card">
+            Languages Used<br>
+            <span id="languagesUsed">0</span>
+          </div>
+
+          <div class="card">
+            This Week<br>
+            <span id="weeklyMessages">0</span>
+          </div>
+        </div>
+
+        <div class="flex-container">
+          <div class="chart-container-l">
+            <canvas id="langChart"></canvas>
+          </div>
+
+          <div>
+            <div class="chart-container-w">
+              <canvas id="weeklyChart"></canvas>
+            </div>
+
+            <div class="time-box">
+              <h2 id="liveClock" style="font-size: 50px;">--:--:--</h2>
+              <p id="liveDate" style="font-size: 40px;">Loading...</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+
+      <!-- ✅✅ CHAT LOGS SECTION -->
+      <section id="chatlogs">
+        <h1>Chat Logs</h1>
+
+        <div class="filters">
+          <input type="text" id="searchInput" onkeyup="filterLogs()" placeholder="Search...">
+
+          <select id="languageFilter" onchange="filterLogs()">
+            <option value="all">All Languages</option>
+            <option value="hi">Hindi</option>
+            <option value="en">English</option>
+            <option value="mr">Marathi</option>
+            <option value="gu">Gujarati</option>
+            <option value="ta">Tamil</option>
+            <option value="te">Telugu</option>
+            <option value="bn">Bengali</option>
+          </select>
+        </div>
+
+        <table id="chatTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>User Message</th>
+              <th>Bot Reply</th>
+              <th>Language</th>
+              <th>Timestamp</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody id="chatTableBody">
+            <tr><td colspan="6" style="text-align:center;">Loading data...</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+
+      <!-- ✅✅ KNOWLEDGE BASE SECTION -->
+      <section id="knowledge">
+        <h1>Knowledge Base (FAQs)</h1>
+
+        <div class="kb-form">
+          <input type="text" id="kbQuestion" placeholder="Enter question">
+          <input type="text" id="kbAnswer" placeholder="Enter answer">
+          <button onclick="addFAQ()">Add FAQ</button>
+        </div>
+
+        <table id="kbTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Question</th>
+              <th>Answer</th>
+              <th>Edit</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody id="kbTableBody">
+            <tr><td colspan="5" style="text-align:center;">Loading FAQs...</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+
+      <!-- ✅ SETTINGS -->
+      <section id="settings">
+        <h1>Settings</h1>
+
+        <div class="flex-container">
+          <div class="setting-box">
+            <h3>Change Admin Password</h3>
+            <input type="password" id="oldPass" placeholder="Current Password">
+            <input type="password" id="newPass" placeholder="New Password">
+            <button onclick="changePassword()">Update Password</button>
+          </div>
+
+          <div class="setting-box">
+            <h3>Clear All Chat Logs</h3>
+            <button class="danger-btn" onclick="clearAllChatLogs()">Delete All Chat Logs</button>
+          </div>
+        </div>
+
+        <h2>Manage Admins</h2>
+
+          <!-- ADD ADMIN FORM -->
+        <div class="setting-box-l">
+          <h3>Add New Admin</h3>
+          <input type="text" id="newAdminName" placeholder="Full Name">
+          <input type="email" id="newAdminEmail" placeholder="Email">
+          <input type="text" id="newAdminId" placeholder="Admin ID">
+          <input type="password" id="newAdminPassword" placeholder="Password">
+          <input type="file" id="newAdminPhoto" placeholder="Profile Photo URL (optional)">
+          <button onclick="addNewAdmin()">Add Admin</button>
+        </div>
+
+        <div class="setting-box-l">
+          <h3>Existing Admins</h3>
+          <table id="adminTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Admin ID</th>
+                <th>Password</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody">
+              <tr><td colspan="4" style="text-align:center;">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Firebase + JS Files -->
+  <script type="module" src="firebase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" src="script.js"></script>
+
+</body>
+</html>

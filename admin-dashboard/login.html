@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-body">
+
+  <div class="login-container">
+    <h2>Admin Login</h2>
+
+    <form id="loginForm">
+      <input type="text" id="adminId" placeholder="Enter Admin ID" />
+      <input type="password" id="adminPass" placeholder="Enter Password" />
+      <button type="submit">Login</button>
+    </form>
+
+    <p id="error-msg"></p>
+  </div>
+
+  <script type="module">
+      import {
+        collection,
+        query,
+        where,
+        getDocs
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+      import { db } from "./firebase-config.js";
+
+      document.getElementById("loginForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const adminId = document.getElementById("adminId").value.trim();
+        const adminPass = document.getElementById("adminPass").value.trim();
+        const errorMsg = document.getElementById("error-msg");
+
+        if (!adminId || !adminPass) {
+          errorMsg.innerText = "Please enter both ID and Password.";
+          return;
+        }
+
+        try {
+          // ✅ Query Firestore for admin credentials
+          const q = query(
+            collection(db, "admins"),
+            where("Id", "==", adminId),
+            where("password", "==", adminPass)
+          );
+
+          const snapshot = await getDocs(q);
+
+          if (snapshot.empty) {
+            errorMsg.innerText = "Invalid ID or Password!";
+            return;
+          }
+
+          let adminData = null;
+          snapshot.forEach(docSnap => {
+            adminData = { id: docSnap.id, ...docSnap.data() };
+          });
+
+          // ✅ Save session data in localStorage
+          localStorage.setItem("isAdmin", "true");
+          localStorage.setItem("adminDocId", adminData.id);
+          localStorage.setItem("adminName", adminData.name || "Admin");
+          localStorage.setItem("adminEmail", adminData.email || "N/A");
+          localStorage.setItem("adminPhoto", adminData.photo || "");
+
+          // ✅ Redirect to dashboard
+          window.location.href = "index.html";
+
+        } catch (err) {
+          console.error("Login Error:", err);
+          errorMsg.innerText = "Login failed. Try again.";
+        }
+      });
+  </script>
+
+</body>
+</html>
